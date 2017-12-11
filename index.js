@@ -15,10 +15,10 @@ app.use(parser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 //localhost connection string - uncomment line below when testing app locally
-const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
+//const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
 //postgres connection string - uncomment line below when testing app on heroku
-//const configuration = process.env.DATABASE_URL;
+const configuration = process.env.DATABASE_URL;
 
 
 const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString.parse(configuration) : configuration);
