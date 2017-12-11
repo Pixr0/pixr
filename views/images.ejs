@@ -1,0 +1,23 @@
+<head>
+  <title>Blog</title>
+<% include header.ejs %>
+</head>
+
+
+<% include nav.ejs %>
+
+
+<div class="container">
+    <div class="row">
+      <%# loop through and display all messages in DB%>
+        <% for (var i = 0; i < result.length; i++) { %>
+            <div class="well mainwell">
+              <a href="/post/<%= result[i].id %>"/class="msgTitle"><%= result[i].title %></a>
+              <p class="msgBody">Posted on: <%= result[i].tstamp %></p>
+              <a href="/post/<%= result[i].id %>"> <img class="msgImg" src="<%= '../'+result[i].image.split('/')[1]+'/'+result[i].image.split('/')[2]+'/'+result[i].image.split('/')[3] %>" alt=""></a><br /><br />
+            </div>
+        <% } %>
+
+    </div>
+</div>
+<% include footer.ejs %>

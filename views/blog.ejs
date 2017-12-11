@@ -1,0 +1,26 @@
+<head>
+  <title>Blog</title>
+<% include header.ejs %>
+</head>
+
+
+<div class="jumbotron">
+<% include nav.ejs %>
+
+</div>
+
+<div class="container">
+    <div class="row">
+      <%# loop through and display all messages in DB%>
+        <% for (var i = 0; i < result.length; i++) { %>
+            <div class="well">
+              <p id="msgTitle"><%= result[i].title %></p>
+              <p id="msgBody">Posted on: <%= result[i].tstamp %></p>
+              <img class="msgImg" src="<%= result[i].image %>" alt=""><br /><br />
+              <p id="msgBody"><%= result[i].body %></p>
+            </div>
+        <% } %>
+
+    </div>
+</div>
+<% include footer.ejs %>
