@@ -1,0 +1,31 @@
+<head>
+  <title>pixr0</title>
+<% include header.ejs %>
+</head>
+
+<% include nav.ejs %>
+<div class="container manager">
+  <p>
+    Manage blog entries here. Delete each message individually, or delete all entries using the button below.
+  </p>
+  <%# loop through and display all messages in DB%>
+    <% for (var i = 0; i < result.length; i++) { %>
+        <div class="well">
+          <button type="button" class="close delMsg" aria-label="Close" data-id="<%= result[i].id %>">
+          <span aria-hidden="true">&times;</span>
+          </button>
+          <p><b>Title:</b> <%= result[i].title %></p>
+          <p><b>Date posted:</b>  <%= result[i].tstamp %></p>
+        </div>
+    <% } %>
+
+    <form action="/delete" method="post">
+      <input type="submit" value="Delete all entries" class="btn btn-danger btn-block delAll" />
+    </form>
+
+
+</div>
+
+<div>
+  <% include footer.ejs %>
+</div>
