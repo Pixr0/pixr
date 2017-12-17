@@ -1,0 +1,57 @@
+<head>
+  <title>Blog</title>
+<% include header.ejs %>
+</head>
+
+
+<% include nav.ejs %>
+
+
+
+
+<div class="container">
+    <div class="well">
+      <% if(locals.errors){ %>
+        <% for (var i = 0; i < errors.length; i++) { %>
+            <div class="alert alert-danger">
+              <a><%= errors[i].msg %></a>
+            </div>
+        <% } %>
+       <% } else{ %>
+
+      <% } %>
+      <h2 class="page-header">Register</h2>
+
+    <form method="post" action="/post/register" enctype="multipart/form-data">
+       <div class="form-group">
+        <label>First Name</label>
+        <input type="text" class="form-control" placeholder="First Name" name="fname">
+      </div>
+      <div class="form-group">
+       <label>Last Name</label>
+       <input type="text" class="form-control" placeholder="Last Name" name="lname">
+     </div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" class="form-control" placeholder="Username" name="username">
+      </div>
+       <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-control" placeholder="Email" name="email">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" placeholder="Password" name="password">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" class="form-control" placeholder="Password" name="password2">
+      </div>
+      <label>Upload a profile photo</label>
+      <input type="file" name="fileUpload"  placeholder='Choose a file...' /><br>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+
+    </div>
+</div>
+<% include footer.ejs %>

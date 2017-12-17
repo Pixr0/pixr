@@ -7,18 +7,25 @@ var pg = require('pg');
 var parseConnectionString = require('pg-connection-string');
 var port = process.env.PORT || 5000;
 var multer = require('multer');
-var cookieParser = require('cookie-parser')
+var user = require('./ormlite');
+var bodyParser = require('body-parser');
+var expressValidator = require('express-validator');
+var flash = require('connect-flash');
+var session = require('express-session');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
-app.use(cookieParser())
+
 app.use(parser.json());
 app.use(parser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 //localhost connection string - uncomment line below when testing app locally
-//const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
+const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
 //postgres connection string - uncomment line below when testing app on heroku
-const configuration = process.env.DATABASE_URL;
+//const configuration = process.env.DATABASE_URL;
 
 
 const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString.parse(configuration) : configuration);
@@ -52,6 +59,54 @@ const upload = multer({
 
 var requestHandler = multer({ storage: storage })
 
+//bcrypt
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
+const myPlaintextPassword = 'plainPass';
+const someOtherPlaintextPassword = 'not_bacon';
+
+// Express Session
+app.use(session({
+    secret: 'secret',
+    saveUninitialized: true,
+    resave: true
+}));
+
+// Passport init
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+// Express Validator
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
+
+// Connect Flash
+app.use(flash());
+
+// Global Vars
+app.use(function (req, res, next) {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  res.locals.user = req.user || null;
+  next();
+});
+
 
 //end of required config. main code begins below
 
@@ -74,46 +129,11 @@ app.post('/fileUpload', requestHandler.single('fileUpload'),function (req, res, 
       });
 }); //router close
 
-//setting up Cookies
-app.use(function (req, res, next) {
-  // check if client sent cookie
-  // console.log(req.cookies);
-  var cookie = req.cookies;
-  if(cookie){
-    if (cookie.userId === undefined)
-    {
-      // no: set a new cookie
-      var uId = 1;
-      res.cookie('userId', uId, { maxAge: 900000, httpOnly: true });
-      console.log('cookie userId created successfully');
-    }
-    else
-    {
-      // yes, cookie was already present
-      console.log('cookie exists', cookie);
-    }
 
-    if (cookie.userName === undefined)
-    {
-      // no: set a new cookie
-      var name = 'Foo';
-      res.cookie('userName', name, { maxAge: 900000, httpOnly: true });
-      console.log('cookie userName created successfully');
-    }
-    else
-    {
-      // yes, cookie was already present
-      console.log('cookie exists', cookie);
-    }
-  }
-
-  next(); // <-- important!
-});
 
 
 //main router
 app.get('/', function(req, res) {
-  console.log('Cookies: ', req.cookies)
   pool.connect(function(err, client, done) {
     client.query('select * from uploads order by tstamp desc', function(err, result) {
     res.render('images', {result: result.rows});
@@ -142,6 +162,71 @@ app.get('/post/:id', function(request, response) {
     });
 });
 
+//login router
+app.get('/login', function(req, res) {
+    res.render('login', {});
+}); // router close
+
+//login router
+app.get('/register', function(req, res) {
+    res.render('register', {});
+}); // router close
+
+//registration user auth handler
+app.post('/post/register', function(req, res) {
+    var fname = req.body.fname;
+    var lname = req.body.lname;
+  	var email = req.body.email;
+  	var username = req.body.username;
+  	var password = req.body.password;
+  	var password2 = req.body.password2;
+
+
+  	// Validation
+  	req.checkBody('fname', 'First name is required').notEmpty();
+    req.checkBody('lname', 'Last name is required').notEmpty();
+  	req.checkBody('email', 'Email is required').notEmpty();
+  	req.checkBody('email', 'Email is not valid').isEmail();
+  	req.checkBody('username', 'Username is required').notEmpty();
+  	req.checkBody('password', 'Password is required').notEmpty();
+  	req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
+
+
+
+    //bcrypt followed by input to DB
+    bcrypt.hash(password, saltRounds, function(err, hash) {
+      console.log('This is the hashed password: '+hash);
+      var User = new user(conString,'userlog');
+
+      User.insertIntoTable({
+        firstName: req.body.fname,
+        lastName: req.body.lname,
+        email: req.body.email,
+        username:req.body.username,
+        profImg:req.body.profImg,
+        password:hash
+
+      }, function(){
+        console.log('Upload to DB succesful!');;
+      });
+
+    });
+
+
+    //Error Handling
+
+  	var errors = req.validationErrors();
+
+    if(errors){
+      console.log(errors);
+      console.log(errors[2].msg);
+      console.log(errors.length);
+		// res.render('register',{errors: errors, testvar: 'this is a test'});
+    req.flash('error_msg', 'You are registered and can now login');
+	} else {
+		console.log('everything looks good');
+	}
+}); // router close
 
 
 
