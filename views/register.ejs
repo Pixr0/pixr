@@ -12,9 +12,9 @@
 <div class="container">
     <div class="well">
       <% if(locals.errors){ %>
-        <% for (var i = 0; i < errors.length; i++) { %>
+        <% for (var i = 0; i < locals.errors.length; i++) { %>
             <div class="alert alert-danger">
-              <a><%= errors[i].msg %></a>
+              <a><%= locals.errors[i].msg %></a>
             </div>
         <% } %>
        <% } else{ %>
@@ -22,7 +22,7 @@
       <% } %>
       <h2 class="page-header">Register</h2>
 
-    <form method="post" action="/post/register" enctype="multipart/form-data">
+    <form method="post" action="/post/register" enctype="application/json">
        <div class="form-group">
         <label>First Name</label>
         <input type="text" class="form-control" placeholder="First Name" name="fname">
