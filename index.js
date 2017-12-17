@@ -16,10 +16,13 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
-
-app.use(parser.json());
-app.use(parser.urlencoded({ extended: true }));
+//middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname + '/public'));
+
+
+
 
 //localhost connection string - uncomment line below when testing app locally
 const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
@@ -64,6 +67,9 @@ var bcrypt = require('bcrypt');
 const saltRounds = 10;
 const myPlaintextPassword = 'plainPass';
 const someOtherPlaintextPassword = 'not_bacon';
+
+
+
 
 // Express Session
 app.use(session({
@@ -112,55 +118,55 @@ app.use(function (req, res, next) {
 
 
 //photo upload page
-app.get('/upload', function(req,res){
-  res.render('upload', {});
-  }); //router close
+// app.get('/upload', function(req,res){
+//   res.render('upload', {});
+//   }); //router close
 
 //upload handler
-app.post('/fileUpload', requestHandler.single('fileUpload'),function (req, res, next) {
-  console.log(req.file);
-  pool.connect(function(err, client, done) {
-     client.query(`insert into uploads (image,title,body) values ($1,$2,$3)`,[req.file.path,req.body.title,req.body.body]);
-      console.log('value of fileUpload: '+req.file.path);
-      console.log(req.body.title);
-      console.log(req.body.body);
-      done();
-      res.redirect('/');
-      });
-}); //router close
+// app.post('/fileUpload', requestHandler.single('fileUpload'),function (req, res, next) {
+//   console.log(req.file);
+//   pool.connect(function(err, client, done) {
+//      client.query(`insert into uploads (image,title,body) values ($1,$2,$3)`,[req.file.path,req.body.title,req.body.body]);
+//       console.log('value of fileUpload: '+req.file.path);
+//       console.log(req.body.title);
+//       console.log(req.body.body);
+//       done();
+//       res.redirect('/');
+//       });
+// }); //router close
 
 
 
 
 //main router
-app.get('/', function(req, res) {
-  pool.connect(function(err, client, done) {
-    client.query('select * from uploads order by tstamp desc', function(err, result) {
-    res.render('images', {result: result.rows});
-      done();
-      });
-  });
-}); // router close
+// app.get('/', function(req, res) {
+//   pool.connect(function(err, client, done) {
+//     client.query('select * from uploads order by tstamp desc', function(err, result) {
+//     res.render('images', {result: result.rows});
+//       done();
+//       });
+//   });
+// }); // router close
 
 //entry manager
-app.get('/manager', function(req, res) {
-  pool.connect(function(err, client, done) {
-    client.query('select * from uploads order by tstamp desc', function(err, result) {
-    res.render('manager', {result: result.rows});
-      done();
-      });
-  });
-}); // router close
-
-app.get('/post/:id', function(request, response) {
-    console.log(`${request.params.id}`);
-    pool.connect(function(err, client, done) {
-      client.query(`select * from uploads where id=${request.params.id}`, function(err, result) {
-         response.render('post', {result: result.rows});
-        done();
-        });
-    });
-});
+// app.get('/manager', function(req, res) {
+//   pool.connect(function(err, client, done) {
+//     client.query('select * from uploads order by tstamp desc', function(err, result) {
+//     res.render('manager', {result: result.rows});
+//       done();
+//       });
+//   });
+// }); // router close
+//
+// app.get('/post/:id', function(request, response) {
+//     console.log(`${request.params.id}`);
+//     pool.connect(function(err, client, done) {
+//       client.query(`select * from uploads where id=${request.params.id}`, function(err, result) {
+//          response.render('post', {result: result.rows});
+//         done();
+//         });
+//     });
+// });
 
 //login router
 app.get('/login', function(req, res) {
@@ -180,7 +186,7 @@ app.post('/post/register', function(req, res) {
   	var username = req.body.username;
   	var password = req.body.password;
   	var password2 = req.body.password2;
-
+    var profImg = req.body.profImg;
 
   	// Validation
   	req.checkBody('fname', 'First name is required').notEmpty();
@@ -191,8 +197,18 @@ app.post('/post/register', function(req, res) {
   	req.checkBody('password', 'Password is required').notEmpty();
   	req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
 
+    //Error Handling
 
+  	var errors = req.validationErrors();
 
+    if(errors){
+      console.log(errors);
+      console.log(errors[2].msg);
+      console.log(errors.length);
+
+    req.flash('error_msg', 'There is something wrong with your registration');
+    res.render('register',{errors: errors});
+	} else {
     //bcrypt followed by input to DB
     bcrypt.hash(password, saltRounds, function(err, hash) {
       console.log('This is the hashed password: '+hash);
@@ -211,20 +227,8 @@ app.post('/post/register', function(req, res) {
       });
 
     });
-
-
-    //Error Handling
-
-  	var errors = req.validationErrors();
-
-    if(errors){
-      console.log(errors);
-      console.log(errors[2].msg);
-      console.log(errors.length);
-		// res.render('register',{errors: errors, testvar: 'this is a test'});
-    req.flash('error_msg', 'You are registered and can now login');
-	} else {
 		console.log('everything looks good');
+    res.redirect('/login');
 	}
 }); // router close
 
@@ -233,9 +237,9 @@ app.post('/post/register', function(req, res) {
 //PREVIOUS PROJECT ROUTERS BELOW
 
 //blog post page
- app.get('/post/*', function(req,res){
-   res.render('post', {});
-}); //router close
+//  app.get('/post/*', function(req,res){
+//    res.render('post', {});
+// }); //router close
 
 //blog
 // app.get('/', function(req, res) {
@@ -248,49 +252,49 @@ app.post('/post/register', function(req, res) {
 // }); // router close
 
 //entry manager
-app.get('/manager', function(req, res) {
-  pool.connect(function(err, client, done) {
-    client.query('select * from upload order by tstamp desc', function(err, result) {
-    res.render('manager', {result: result.rows});
-      done();
-      });
-  });
-}); // router close
+// app.get('/manager', function(req, res) {
+//   pool.connect(function(err, client, done) {
+//     client.query('select * from upload order by tstamp desc', function(err, result) {
+//     res.render('manager', {result: result.rows});
+//       done();
+//       });
+//   });
+// }); // router close
 
 //submit button post handler
-app.post('/add', function(req,res){
-  pool.connect(function(err, client, done) {
-    client.query(`insert into blog (title,body,image) values ($1, $2, $3)`,[req.body.title,req.body.message,req.body.image]);
-      done();
-      res.redirect('/');
-      });
-  }); //router close
+// app.post('/add', function(req,res){
+//   pool.connect(function(err, client, done) {
+//     client.query(`insert into blog (title,body,image) values ($1, $2, $3)`,[req.body.title,req.body.message,req.body.image]);
+//       done();
+//       res.redirect('/');
+//       });
+//   }); //router close
 
 //delete all
-app.delete('/delete', function(req, res) {
-  pool.connect(function(err, client, done) {
-    client.query('delete from uploads', function(err, result) {
-      res.sendStatus(200);
-      done();
-      });
-  });
-}); // router close
+// app.delete('/delete', function(req, res) {
+//   pool.connect(function(err, client, done) {
+//     client.query('delete from uploads', function(err, result) {
+//       res.sendStatus(200);
+//       done();
+//       });
+//   });
+// }); // router close
 
 //portfolio page
- app.get('/portfolio', function(req,res){
-   res.render('portfolio', {});
-}); //router close
+//  app.get('/portfolio', function(req,res){
+//    res.render('portfolio', {});
+// }); //router close
 
 
 //delete by message id
-app.delete('/delete/:id', function(req, res) {
-  pool.connect(function(err, client, done) {
-    client.query('delete from uploads where id = $1',[req.params.id], function(err, result) {
-      res.sendStatus(200);
-      done();
-      });
-  });
-}); // router close
+// app.delete('/delete/:id', function(req, res) {
+//   pool.connect(function(err, client, done) {
+//     client.query('delete from uploads where id = $1',[req.params.id], function(err, result) {
+//       res.sendStatus(200);
+//       done();
+//       });
+//   });
+// }); // router close
 
 
 //No modifications below this line!
