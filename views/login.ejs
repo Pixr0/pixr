@@ -8,9 +8,15 @@
 
 
 <div class="container">
+
     <div class="well">
+      <% if(success_msg){ %>
+            <div class="alert alert-success">
+              <a><%= success_msg %></a>
+            </div>
+        <% } %>
       <h2 class="page-header">Account Login</h2>
-<form method="post" action="/users/login">
+<form method="post" action="/login">
   <div class="form-group">
     <label>Username</label>
     <input type="text" class="form-control" name="username" placeholder="Username">

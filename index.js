@@ -16,6 +16,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
+var User = new user(conString,'userlog');
 //middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -71,7 +72,7 @@ const someOtherPlaintextPassword = 'not_bacon';
 
 
 
-// Express Session
+//Express Session
 app.use(session({
     secret: 'secret',
     saveUninitialized: true,
@@ -170,16 +171,86 @@ app.use(function (req, res, next) {
 
 //login router
 app.get('/login', function(req, res) {
-    res.render('login', {});
+    res.render('login');
 }); // router close
+
+app.get('/success', function(req, res) {
+    res.send('login successful');
+}); // router close
+
+app.get('/fail', function(req, res) {
+    res.send('login failed');
+}); // router close
+
+
+
+//working local strategy
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+
+
+   User.getUserByUsername(username, function(data){
+   	if(undefined){
+			//invalid username
+      console.log('invalid user');
+   		return done(null, false, {message: 'Unknown User'});
+   	}
+
+   	User.comparePassword(password, data[0].password, function(error, result){
+   		if(error) throw error;
+   		if(result){
+				//succesful login
+        console.log('login succesful');
+   			return done(null, data);
+   		} else {
+				//invalid password
+        console.log('invalid pass');
+   			return done(null, false, {message: 'Invalid password'});
+   		}
+   	});
+   });
+
+
+  }));
+
+
+
+//orm test
+app.get('/orm', function(req, res) {
+    User.getUserByUsername('jmacaldo', function(data){
+      User.comparePassword('plpl',data[0].password, function(error,result){
+        console.log('result from bcrypt: '+result);
+    })
+
+   })
+}); // router close
+
+
+//serialize deserializeUser
+passport.serializeUser(function(data, done) {
+  done(null, data[0].id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+//passport login
+app.post('/login',
+  passport.authenticate('local', {successRedirect:'/success', failureRedirect:'/fail',failureFlash: true}),
+  function(req, res) {
+    res.redirect('/');
+  });
 
 //login router
 app.get('/register', function(req, res) {
-    res.render('register', {});
+    res.render('register');
+    res.end();
 }); // router close
 
 //registration user auth handler
-app.post('/post/register', function(req, res) {
+app.post('/register', function(req, res) {
     var fname = req.body.fname;
     var lname = req.body.lname;
   	var email = req.body.email;
@@ -203,16 +274,12 @@ app.post('/post/register', function(req, res) {
 
     if(errors){
       console.log(errors);
-      console.log(errors[2].msg);
-      console.log(errors.length);
-
-    req.flash('error_msg', 'There is something wrong with your registration');
-    res.render('register',{errors: errors});
+      res.render('register', {errors: errors});
 	} else {
     //bcrypt followed by input to DB
+    console.log('plain string password: '+password);
     bcrypt.hash(password, saltRounds, function(err, hash) {
       console.log('This is the hashed password: '+hash);
-      var User = new user(conString,'userlog');
 
       User.insertIntoTable({
         firstName: req.body.fname,
@@ -228,6 +295,7 @@ app.post('/post/register', function(req, res) {
 
     });
 		console.log('everything looks good');
+    req.flash('success_msg', 'You are registered and can now login');
     res.redirect('/login');
 	}
 }); // router close
@@ -301,8 +369,7 @@ app.post('/post/register', function(req, res) {
 
 //if no routes are matched, return a 404
 app.get('*', function(req, res) {
-    res.status(404).send('<h1>test err!</h1>');
-    res.render('err404', {});
+    res.status(404).send('404 error');
 });
 
 //have the application listen on a specific port
