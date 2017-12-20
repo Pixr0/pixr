@@ -1,5 +1,5 @@
 <head>
-  <title>Blog</title>
+  <title>Register an account</title>
 <% include header.ejs %>
 </head>
 
@@ -10,7 +10,8 @@
 
 
 <div class="container">
-    <div class="well">
+
+      <h2 class="page-header">Register</h2>
       <% if(locals.errors){ %>
         <% for (var i = 0; i < locals.errors.length; i++) { %>
             <div class="alert alert-danger">
@@ -20,9 +21,7 @@
        <% } else{ %>
 
       <% } %>
-      <h2 class="page-header">Register</h2>
-
-    <form method="post" action="/post/register" enctype="application/json">
+    <form method="post" action="/register" enctype="application/json">
        <div class="form-group">
         <label>First Name</label>
         <input type="text" class="form-control" placeholder="First Name" name="fname">
@@ -47,8 +46,8 @@
         <label>Confirm Password</label>
         <input type="password" class="form-control" placeholder="Password" name="password2">
       </div>
-      <label>Upload a profile photo</label>
-      <input type="file" name="profImg"  placeholder='Choose a file...' /><br>
+      <%# <label>Upload a profile photo</label>
+      <input type="file" name="profImg"  placeholder='Choose a file...' /><br>%>
       <button type="submit" class="btn btn-default">Submit</button>
     </form>
 

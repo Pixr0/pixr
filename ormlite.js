@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const bcrypt = require('bcryptjs');
 
 class User{
   constructor(conString, tableName){
@@ -68,6 +69,37 @@ class User{
        return cb(data);
     });
   }
+
+
+  getUserByUsername(username, callback){
+    this.model.findAll({
+      where: {
+        username: username
+      }
+    })
+    .catch(function(err){
+      throw err;
+    })
+    .then(function(rows) {
+       var data = [];
+       for(var i = 0; i < rows.length; i++) {
+         data.push(rows[i].dataValues);
+       }
+       return callback(data);
+    })
+
+
+  }
+
+  comparePassword(candidatePassword, hash, callback){
+    bcrypt.compare(candidatePassword, hash, function(error, result) {
+      	if(error) throw error;
+      	callback(false, result);
+  	});
+  }
+
+
+
 }
 
 // export Table class
