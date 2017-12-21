@@ -5,10 +5,15 @@
       <a class="navbar-brand float-left" href="/">pixr0.app</a>
     </div>
     <ul class="nav navbar-nav">
+      <% if(!user){ %>
        <li><a class="menuItem" href="/register">Register</a></li>
        <li><a class="menuItem" href="/login">Login</a></li>
+        <% } %>
+         <% if(user){ %>
        <li><a class="menuItem" href="/upload">Upload New Image</a></li>
        <li><a class="menuItem" href="/manager">Manage entries</a></li>
+       <li><a class="menuItem" href="/logout">Log out</a></li>
+         <% } %>
     </ul>
   </div>
 </nav>

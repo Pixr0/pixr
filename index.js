@@ -22,9 +22,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname + '/public'));
 
-
-
-
 //localhost connection string - uncomment line below when testing app locally
 const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
@@ -68,9 +65,6 @@ var bcrypt = require('bcrypt');
 const saltRounds = 10;
 const myPlaintextPassword = 'plainPass';
 const someOtherPlaintextPassword = 'not_bacon';
-
-
-
 
 //Express Session
 app.use(session({
@@ -117,57 +111,15 @@ app.use(function (req, res, next) {
 
 //end of required config. main code begins below
 
-
-//photo upload page
-// app.get('/upload', function(req,res){
-//   res.render('upload', {});
-//   }); //router close
-
-//upload handler
-// app.post('/fileUpload', requestHandler.single('fileUpload'),function (req, res, next) {
-//   console.log(req.file);
-//   pool.connect(function(err, client, done) {
-//      client.query(`insert into uploads (image,title,body) values ($1,$2,$3)`,[req.file.path,req.body.title,req.body.body]);
-//       console.log('value of fileUpload: '+req.file.path);
-//       console.log(req.body.title);
-//       console.log(req.body.body);
-//       done();
-//       res.redirect('/');
-//       });
-// }); //router close
-
-
-
-
-//main router
-// app.get('/', function(req, res) {
-//   pool.connect(function(err, client, done) {
-//     client.query('select * from uploads order by tstamp desc', function(err, result) {
-//     res.render('images', {result: result.rows});
-//       done();
-//       });
-//   });
-// }); // router close
-
-//entry manager
-// app.get('/manager', function(req, res) {
-//   pool.connect(function(err, client, done) {
-//     client.query('select * from uploads order by tstamp desc', function(err, result) {
-//     res.render('manager', {result: result.rows});
-//       done();
-//       });
-//   });
-// }); // router close
-//
-// app.get('/post/:id', function(request, response) {
-//     console.log(`${request.params.id}`);
-//     pool.connect(function(err, client, done) {
-//       client.query(`select * from uploads where id=${request.params.id}`, function(err, result) {
-//          response.render('post', {result: result.rows});
-//         done();
-//         });
-//     });
-// });
+//ensure authentication
+function ensureAuthenticated(req, res, next){
+	if(req.isAuthenticated()){
+		return next();
+	} else {
+		req.flash('error_msg','You are not logged in');
+		res.redirect('/login');
+	}
+}
 
 //login router
 app.get('/login', function(req, res) {
@@ -175,7 +127,7 @@ app.get('/login', function(req, res) {
 }); // router close
 
 app.get('/success', function(req, res) {
-    res.send('login successful');
+    res.send('Login successful');
 }); // router close
 
 app.get('/fail', function(req, res) {
@@ -184,28 +136,31 @@ app.get('/fail', function(req, res) {
 
 
 
-//working local strategy
+//local strategy
 passport.use(new LocalStrategy(
   function(username, password, done) {
 
 
-   User.getUserByUsername(username, function(data){
-   	if(undefined){
+   User.getUserByUsername(username, function(data,err){
+    // console.log('this is the returned data: '+data);
+    var user = data[0];
+   	if(!user){
 			//invalid username
       console.log('invalid user');
    		return done(null, false, {message: 'Unknown User'});
    	}
 
-   	User.comparePassword(password, data[0].password, function(error, result){
-   		if(error) throw error;
+   	User.comparePassword(password, user.password, function(err, result){
+   		if (err)
+        return err;
    		if(result){
 				//succesful login
         console.log('login succesful');
-   			return done(null, data);
-   		} else {
-				//invalid password
-        console.log('invalid pass');
-   			return done(null, false, {message: 'Invalid password'});
+   			return done(null, user);
+     		} else {
+  				//invalid password
+          console.log('invalid pass');
+     			return done(null, false, {message: 'Invalid password'});
    		}
    	});
    });
@@ -227,26 +182,47 @@ app.get('/orm', function(req, res) {
 
 
 //serialize deserializeUser
-passport.serializeUser(function(data, done) {
-  done(null, data[0].id);
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
+  User.findById(id, function(data,err) {
+    var user = data[0];
+    console.log(user);
     done(err, user);
   });
 });
+
 //passport login
 app.post('/login',
-  passport.authenticate('local', {successRedirect:'/success', failureRedirect:'/fail',failureFlash: true}),
+  passport.authenticate('local', {
+    failureRedirect:'/login',
+    failureFlash: true}),
   function(req, res) {
-    res.redirect('/');
+    req.flash('success_msg','You are now logged in!')
+    res.redirect('/' + req.user.username);
+  });
+
+//logout router
+  app.get('/logout', function(req, res){
+  	req.logout();
+
+  	req.flash('success_msg', 'You are logged out');
+
+  	res.redirect('/login');
   });
 
 //login router
 app.get('/register', function(req, res) {
     res.render('register');
     res.end();
+}); // router close
+
+//user page
+app.get('/:user',ensureAuthenticated, function(req, res) {
+  console.log(req.user.firstName);
+    res.render('user',{user: req.user});
 }); // router close
 
 //registration user auth handler
@@ -304,6 +280,57 @@ app.post('/register', function(req, res) {
 
 //PREVIOUS PROJECT ROUTERS BELOW
 
+//photo upload page
+// app.get('/upload', function(req,res){
+//   res.render('upload', {});
+//   }); //router close
+
+//upload handler
+// app.post('/fileUpload', requestHandler.single('fileUpload'),function (req, res, next) {
+//   console.log(req.file);
+//   pool.connect(function(err, client, done) {
+//      client.query(`insert into uploads (image,title,body) values ($1,$2,$3)`,[req.file.path,req.body.title,req.body.body]);
+//       console.log('value of fileUpload: '+req.file.path);
+//       console.log(req.body.title);
+//       console.log(req.body.body);
+//       done();
+//       res.redirect('/');
+//       });
+// }); //router close
+
+
+
+
+//main router
+// app.get('/', function(req, res) {
+//   pool.connect(function(err, client, done) {
+//     client.query('select * from uploads order by tstamp desc', function(err, result) {
+//     res.render('images', {result: result.rows});
+//       done();
+//       });
+//   });
+// }); // router close
+
+//entry manager
+// app.get('/manager', function(req, res) {
+//   pool.connect(function(err, client, done) {
+//     client.query('select * from uploads order by tstamp desc', function(err, result) {
+//     res.render('manager', {result: result.rows});
+//       done();
+//       });
+//   });
+// }); // router close
+//
+// app.get('/post/:id', function(request, response) {
+//     console.log(`${request.params.id}`);
+//     pool.connect(function(err, client, done) {
+//       client.query(`select * from uploads where id=${request.params.id}`, function(err, result) {
+//          response.render('post', {result: result.rows});
+//         done();
+//         });
+//     });
+// });
+
 //blog post page
 //  app.get('/post/*', function(req,res){
 //    res.render('post', {});
@@ -347,11 +374,6 @@ app.post('/register', function(req, res) {
 //       });
 //   });
 // }); // router close
-
-//portfolio page
-//  app.get('/portfolio', function(req,res){
-//    res.render('portfolio', {});
-// }); //router close
 
 
 //delete by message id
