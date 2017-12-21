@@ -10,11 +10,27 @@
 <div class="container">
 
     <div class="well">
-      <% if(success_msg){ %>
-            <div class="alert alert-success">
-              <a><%= success_msg %></a>
-            </div>
-        <% } %>
+
+
+          <% if(locals.success_msg){ %>
+            <% for (var i = 0; i < locals.success_msg.length; i++) { %>
+                <div class="alert alert-success">
+                  <a><%= locals.success_msg[i] %></a>
+                </div>
+            <% } %>
+           <% } else{ %>
+          <% } %>
+
+          <% if(locals.error_msg){ %>
+            <% for (var i = 0; i < locals.error_msg.length; i++) { %>
+                <div class="alert alert-danger">
+                  <a><%= locals.error_msg[i] %></a>
+                </div>
+            <% } %>
+           <% } else{ %>
+          <% } %>
+
+
       <h2 class="page-header">Account Login</h2>
 <form method="post" action="/login">
   <div class="form-group">

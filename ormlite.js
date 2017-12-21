@@ -65,7 +65,7 @@ class User{
        for(var i = 0; i < rows.length; i++) {
          data.push(rows[i].dataValues);
        }
-       console.log(data);
+      // console.log(data);
        return cb(data);
     });
   }
@@ -77,23 +77,24 @@ class User{
         username: username
       }
     })
-    .catch(function(err){
-      throw err;
-    })
+
     .then(function(rows) {
        var data = [];
        for(var i = 0; i < rows.length; i++) {
          data.push(rows[i].dataValues);
        }
+
+       //console.log(data);
        return callback(data);
     })
+
 
 
   }
 
   comparePassword(candidatePassword, hash, callback){
-    bcrypt.compare(candidatePassword, hash, function(error, result) {
-      	if(error) throw error;
+    bcrypt.compare(candidatePassword, hash, function(err, result) {
+      	if(err) return err;
       	callback(false, result);
   	});
   }
