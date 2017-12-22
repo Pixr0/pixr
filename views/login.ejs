@@ -1,49 +1,49 @@
 <head>
-  <title>Blog</title>
-<% include header.ejs %>
+  <title>Pixr: Login</title>
+<% include loginheader.ejs %>
 </head>
 
 
-<% include nav.ejs %>
 
 
-<div class="container">
+<div class="well loginwell">
+  <div class="logodiv">
+    <img class="logo" src="../media/resources/newlogo.png" />
 
-    <div class="well">
+  </div>
+    <% if(locals.success_msg){ %>
+      <% for (var i = 0; i < locals.success_msg.length; i++) { %>
+          <div class="alert alert-success">
+            <a><%= locals.success_msg[i] %></a>
+          </div>
+      <% } %>
+     <% } else{ %>
+    <% } %>
+
+    <% if(locals.error_msg){ %>
+      <% for (var i = 0; i < locals.error_msg.length; i++) { %>
+          <div class="alert alert-danger">
+            <a><%= locals.error_msg[i] %></a>
+          </div>
+      <% } %>
+     <% } else{ %>
+    <% } %>
 
 
-          <% if(locals.success_msg){ %>
-            <% for (var i = 0; i < locals.success_msg.length; i++) { %>
-                <div class="alert alert-success">
-                  <a><%= locals.success_msg[i] %></a>
-                </div>
-            <% } %>
-           <% } else{ %>
-          <% } %>
 
-          <% if(locals.error_msg){ %>
-            <% for (var i = 0; i < locals.error_msg.length; i++) { %>
-                <div class="alert alert-danger">
-                  <a><%= locals.error_msg[i] %></a>
-                </div>
-            <% } %>
-           <% } else{ %>
-          <% } %>
-
-
-      <h2 class="page-header">Account Login</h2>
 <form method="post" action="/login">
-  <div class="form-group">
-    <label>Username</label>
-    <input type="text" class="form-control" name="username" placeholder="Username">
-  </div>
-  <div class="form-group">
-    <label>Password</label>
-    <input type="password" class="form-control" name="password" placeholder="Password">
-  </div>
-  <button type="submit" class="btn btn-default">Submit</button>
-</form>
-
-    </div>
+<div class="form-group">
+<label>Username</label>
+<input type="text" class="form-control" name="username" placeholder="Username">
 </div>
-<% include footer.ejs %>
+<div class="form-group">
+<label>Password</label>
+<input type="password" class="form-control" name="password" placeholder="Password">
+</div>
+<button type="submit" class="btn btn-default">Submit</button>
+
+<p id="link">
+  Don't have an account? <a href="/register">Sign up for one!</a>
+</p>
+
+</div>
