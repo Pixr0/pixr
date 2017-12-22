@@ -1,0 +1,37 @@
+body {
+  background-image: url('../media/resources/loginbg.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.loginwell {
+  background-color: 000;
+  opacity: .7;
+  width: 400px;
+  border-color: 000;
+  margin-top: 60px !important;
+  color: #fff;
+  padding-top: 20px;
+  -webkit-box-shadow: 10px 10px 84px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 84px 0px rgba(0,0,0,0.75);
+  box-shadow: 10px 10px 84px 0px rgba(0,0,0,0.75);
+  border-radius: 10px;
+}
+
+.logo {
+  height: 75px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.logodiv {
+  margin-left: 95px;
+}
+
+.alert {
+  opacity: 1;
+}
+
+#link {
+  margin-top: 20px;
+}
