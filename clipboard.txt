@@ -1,0 +1,116 @@
+// <a href="/post/<%= result[i].id %>"> <img class="msgImg" src="<%= '../'+result[i].image.split('/')[1]+'/'+result[i].image.split('/')[2]+'/'+result[i].image.split('/')[3] %>" alt=""></a><br /><br />
+
+
+
+
+
+<h1>Welcome, <%= user.firstName %> </h1>
+
+<% if(locals.error_msg){ %>
+      <div class="alert alert-danger">
+        <a><%=  locals.error_msg %></a>
+      </div>
+  <% } %>
+
+  <% if(locals.success_msg){ %>
+        <div class="alert alert-success">
+          <a><%=  locals.success_msg %></a>
+        </div>
+    <% } %>
+
+
+//login backup
+
+<div class="well">
+
+
+      <% if(locals.success_msg){ %>
+        <% for (var i = 0; i < locals.success_msg.length; i++) { %>
+            <div class="alert alert-success">
+              <a><%= locals.success_msg[i] %></a>
+            </div>
+        <% } %>
+       <% } else{ %>
+      <% } %>
+
+      <% if(locals.error_msg){ %>
+        <% for (var i = 0; i < locals.error_msg.length; i++) { %>
+            <div class="alert alert-danger">
+              <a><%= locals.error_msg[i] %></a>
+            </div>
+        <% } %>
+       <% } else{ %>
+      <% } %>
+
+
+  <h2 class="page-header">Account Login</h2>
+<form method="post" action="/login">
+<div class="form-group">
+<label>Username</label>
+<input type="text" class="form-control" name="username" placeholder="Username">
+</div>
+<div class="form-group">
+<label>Password</label>
+<input type="password" class="form-control" name="password" placeholder="Password">
+</div>
+<button type="submit" class="btn btn-default">Submit</button>
+</form>
+
+</div>
+
+
+//random bg
+<%console.log('this is a test');%>
+
+<%$(document).ready(function () { %>
+<% $(function randBg() {%>
+    <%$('body').css('background-color', 'blue !important');%>
+<%});%>
+
+<%randBg(); %>
+
+
+<%});%>
+
+
+//register
+
+<h2 class="page-header">Register</h2>
+<% if(locals.errors){ %>
+  <% for (var i = 0; i < locals.errors.length; i++) { %>
+      <div class="alert alert-danger">
+        <a><%= locals.errors[i].msg %></a>
+      </div>
+  <% } %>
+ <% } else{ %>
+
+<% } %>
+<form method="post" action="/register" enctype="application/json">
+ <div class="form-group">
+  <label>First Name</label>
+  <input type="text" class="form-control" placeholder="First Name" name="fname">
+</div>
+<div class="form-group">
+ <label>Last Name</label>
+ <input type="text" class="form-control" placeholder="Last Name" name="lname">
+</div>
+<div class="form-group">
+  <label>Username</label>
+  <input type="text" class="form-control" placeholder="Username" name="username">
+</div>
+ <div class="form-group">
+  <label>Email</label>
+  <input type="email" class="form-control" placeholder="Email" name="email">
+</div>
+<div class="form-group">
+  <label>Password</label>
+  <input type="password" class="form-control" placeholder="Password" name="password">
+</div>
+<div class="form-group">
+  <label>Confirm Password</label>
+  <input type="password" class="form-control" placeholder="Password" name="password2">
+</div>
+<%# <label>Upload a profile photo</label>
+<input type="file" name="profImg"  placeholder='Choose a file...' /><br>%>
+<button type="submit" class="btn btn-default">Submit</button>
+</form>

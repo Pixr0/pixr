@@ -24,7 +24,7 @@ class User{
   }
 
   createModel(tablename){
-    console.log('creating table with '+ tablename);
+    console.log('creating users table with '+ tablename);
     return this.sequelize.define(tablename, {
     firstName: Sequelize.STRING,
     lastName: Sequelize.STRING,
@@ -70,6 +70,21 @@ class User{
     });
   }
 
+  uploadProfImg(id, profImgUrl){
+    this.model.findAll({
+      where: {
+        id: id
+      }
+    }).then(function(rows,tableRef) {
+       var data = [];
+       for(var i = 0; i < rows.length; i++) {
+         data.push(rows[i].dataValues);
+       }
+
+      // return cb(data);
+    });
+  };
+
 
   getUserByUsername(username, callback){
     this.model.findAll({
@@ -98,10 +113,14 @@ class User{
       	callback(false, result);
   	});
   }
-
-
-
 }
+
+
+
+
+
 
 // export Table class
 module.exports = User;
+
+//

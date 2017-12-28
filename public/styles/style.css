@@ -17,6 +17,20 @@ html, body {
   border: #808080;
 }
 
+.ownerusername {
+  font-weight: bold;
+  position: absolute;
+
+  display: inline-block;
+  top: 0;
+
+}
+
+.imginfo {
+  position: relative;
+  display: inline-block;
+
+}
 
 .float-left{
   float: left;

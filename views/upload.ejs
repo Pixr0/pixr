@@ -6,20 +6,44 @@
 <div class="container mainContainer">
 <div class="col-md-8 col-md-offset-2">
 
+  <% if(locals.success_msg){ %>
+    <% for (var i = 0; i < locals.success_msg.length; i++) { %>
+        <div class="alert alert-success">
+          <a><%= locals.success_msg[i] %></a>
+        </div>
+    <% } %>
+   <% } else{ %>
+  <% } %>
 
-        <h3>File Upload</h3>
+  <% if(locals.error_msg){ %>
+    <% for (var i = 0; i < locals.error_msg.length; i++) { %>
+        <div class="alert alert-danger">
+          <a><%= locals.error_msg[i] %></a>
+        </div>
+    <% } %>
+   <% } else{ %>
+  <% } %>
+
+  <% if(locals.errors){ %>
+    <% for (var i = 0; i < locals.errors.length; i++) { %>
+        <div class="alert alert-danger">
+          <a><%= locals.errors[i].msg %></a>
+        </div>
+    <% } %>
+   <% } else{ %>
+
+  <% } %>
+
+        <h3>Image Upload</h3>
         <%= typeof msg != 'undefined' ? msg : '' %>
-<form method="POST" action="/fileUpload" enctype="multipart/form-data">
+<form method="POST" action="/upload" enctype="multipart/form-data">
 	<!-- COMPONENT START -->
 	<div class="form-group">
-    <label>Title</label>
-    <input type="text" class="form-control" name="title" ><br>
+
     <label>Image Description</label>
-    <textarea class="form-control" name="body" rows="10"></textarea> <br>
+    <textarea class="form-control" name="description" rows="10"></textarea> <br>
     <label>Image File</label>
-    <input type="file" name="fileUpload"  placeholder='Choose a file...' /><br>
-
-
+    <input type="file" name="image"  placeholder='Choose a file...' /><br>
 	</div>
 	<div class="form-group">
 		<button type="submit" class="btn btn-primary">Submit</button>
