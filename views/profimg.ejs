@@ -1,0 +1,53 @@
+<head>
+  <title>pixr0</title>
+<% include header.ejs %>
+</head>
+<% include nav.ejs %>
+<div class="container mainContainer">
+<div class="col-md-8 col-md-offset-2">
+
+  <% if(locals.success_msg){ %>
+    <% for (var i = 0; i < locals.success_msg.length; i++) { %>
+        <div class="alert alert-success">
+          <a><%= locals.success_msg[i] %></a>
+        </div>
+    <% } %>
+   <% } else{ %>
+  <% } %>
+
+  <% if(locals.error_msg){ %>
+    <% for (var i = 0; i < locals.error_msg.length; i++) { %>
+        <div class="alert alert-danger">
+          <a><%= locals.error_msg[i] %></a>
+        </div>
+    <% } %>
+   <% } else{ %>
+  <% } %>
+
+  <% if(locals.errors){ %>
+    <% for (var i = 0; i < locals.errors.length; i++) { %>
+        <div class="alert alert-danger">
+          <a><%= locals.errors[i].msg %></a>
+        </div>
+    <% } %>
+   <% } else{ %>
+
+  <% } %>
+
+        <%= typeof msg != 'undefined' ? msg : '' %>
+<form method="POST" action="/profimg" enctype="multipart/form-data">
+	<!-- COMPONENT START -->
+	<div class="form-group">
+<h2>Welcome, <%= user.firstName %>!</h2>
+<p>Let's get you started by first getting your profile image</p>
+    <input type="file" name="image"  placeholder='Choose a file...' /><br>
+	</div>
+	<div class="form-group">
+		<button type="submit" class="btn btn-primary">Submit</button>
+		<button type="reset" class="btn btn-danger">Reset</button>
+	</div>
+</form>
+</div>
+</div><!-- closig tag for container webdev  -->
+<!-- footer starts here -->
+<% include footer.ejs %>

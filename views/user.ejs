@@ -1,11 +1,30 @@
 <head>
   <title>User Profile</title>
-<% include header.ejs %>
+<% include usersheader.ejs %>
 </head>
 <% include nav.ejs %>
 <div class="container webdev">
   <div class="well">
     <h2>Welcome, <%= user.firstName %>!</h2>
+    <p>
+      Manage entries here. Delete each photo individually, or delete all entries using the button below.
+    </p>
+    <%# loop through and display all messages in DB%>
+      <% for (var i = 0; i < result.length; i++) { %>
+          <div class="well">
+            <button type="button" class="close delMsg" aria-label="Close" data-id="<%= result[i].id %>">
+            <span aria-hidden="true">&times;</span>
+            </button>
+              <a href="/images/<%= result[i].id %>"> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></a><br /><br />
+            <p><b>Title:</b> <%= result[i].description %></p>
+            <p><b>Date posted:</b>  <%= result[i].tstamp %></p>
+          </div>
+      <% } %>
+
+      <form action="/delete" method="post">
+        <input type="submit" value="Delete all entries" class="btn btn-danger btn-block delAll" />
+      </form>
+
   </div>
 </div> <!-- closig tag for container webdev  -->
 <!-- footer starts here -->

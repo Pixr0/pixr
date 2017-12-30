@@ -1,12 +1,12 @@
 body {
-  background-image: url('../media/resources/regbg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .loginwell {
   background-color: 000;
-  opacity: .9;
+  opacity: .85;
   width: 400px;
   border-color: 000;
   margin-top: 60px !important;
@@ -22,11 +22,11 @@ body {
   height: 75px;
   padding-top: 10px;
   padding-bottom: 10px;
+  display: block;
+  margin: auto;
 }
 
-.logodiv {
-  margin-left: 95px;
-}
+
 
 .alert {
   opacity: 1;

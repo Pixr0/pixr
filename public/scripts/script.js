@@ -36,4 +36,8 @@ $(document).ready(function(){
     }
   });
 
+//this function generates a random background each time page is refreshed
+// var i = Math.floor((Math.random() * 8) + 1);
+// (function () {document.body.style.backgroundImage= "url('../media/resources/loginbg"+i+".jpg')";})();
+
 }); //doc ready close

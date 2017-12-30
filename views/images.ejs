@@ -1,23 +1,27 @@
 <head>
-  <title>pixr0</title>
+  <title>pixr</title>
 <% include header.ejs %>
 </head>
 
 
 <% include nav.ejs %>
 
-
+<%console.log('link from page '+user.profImg);%>
 <div class="container">
     <div class="row">
       <%# loop through and display all messages in DB%>
         <% for (var i = 0; i < result.length; i++) { %>
             <div class="well mainwell">
-              <a href="/post/<%= result[i].id %>"/class="msgTitle"><%= result[i].title %></a>
-              <p class="msgBody">Posted on: <%= result[i].tstamp %></p>
-              <a href="/post/<%= result[i].id %>"> <img class="msgImg" src="<%= '../'+result[i].image.split('/')[1]+'/'+result[i].image.split('/')[2]+'/'+result[i].image.split('/')[3] %>" alt=""></a><br /><br />
+             <img class="avatar" src="<%= '../media/uploads/'+result[i].ownerAvatar %>" alt="" /> <b><%= result[i].ownerusername %></b> <br /><br />
+              <a href="/images/<%= result[i].id %>"> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></a><br /><br />
+              <div class="imginfo">
+                <%= result[i].description %>
+
+              </div>
+
+
             </div>
         <% } %>
 
     </div>
 </div>
-<% include footer.ejs %>
