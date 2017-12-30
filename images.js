@@ -28,6 +28,7 @@ class Images{
     imgUrl: Sequelize.STRING,
     description: Sequelize.STRING,
     ownerusername: Sequelize.STRING,
+    ownerAvatar: Sequelize.STRING,
     owner: Sequelize.INTEGER},
     {freezeTableName: true});
   }
@@ -37,9 +38,8 @@ class Images{
     this.model.findAll().then(function(rows) {
        var data = [];
        for(var i = 0; i < rows.length; i++) {
-         data.push(rows[i].dataValues);
+         data.unshift(rows[i].dataValues);
        }
-       console.log(data);
        return cb(data);
     });
   }
@@ -65,6 +65,15 @@ class Images{
        console.log(data);
        return cb(data);
     });
+  }
+
+  deleteOne(id,cb){
+    this.model.destroy({
+    where: {
+        id:id
+      }
+    })
+    cb();
   }
 
 

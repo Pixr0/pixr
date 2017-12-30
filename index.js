@@ -134,7 +134,8 @@ app.get('/success', function(req, res) {
 }); // router close
 
 app.get('/fail', function(req, res) {
-    res.send('login failed');
+    req.flash('error_msg','Invalid username or password')
+    res.render('login');
 }); // router close
 
 
@@ -200,7 +201,7 @@ passport.deserializeUser(function(id, done) {
 //passport login
 app.post('/login',
   passport.authenticate('local', {
-    failureRedirect:'/login',
+    failureRedirect:'/fail',
     failureFlash: true}),
   function(req, res) {
     req.flash('success_msg','You are now logged in!')
@@ -278,7 +279,7 @@ app.post('/register', function(req, res) {
     });
 		console.log('everything looks good');
     req.flash('success_msg', 'You are registered and can now login');
-    res.redirect('/login');
+    res.redirect('/images');
 	}
 }); // router close
 
@@ -290,13 +291,14 @@ app.get('/profimg', function(req,res){
 
 //prof img upload handler
 app.post('/profimg', requestHandler.single("image"),function (req, res, next) {
-console.log(req.file.path);
+//console.log(req.file.path);
   if (!req.file) {
     req.flash('error_msg','File required')
     res.redirect('profimg');
 
   }else {
-    User.uploadProfImg(req.user.id,req.file.path);
+    console.log(req.file.filename);
+    User.uploadProfImg(req.user.id,req.file.filename);
 
 
 
@@ -312,7 +314,7 @@ console.log(req.file.path);
 //PREVIOUS PROJECT ROUTERS BELOW
 
 //photo upload page
-app.get('/upload', function(req,res){
+app.get('/upload', ensureAuthenticated, function(req,res){
   res.render('upload', {});
   }); //router close
 
@@ -339,6 +341,7 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
       imgUrl: req.file.path,
       description: req.body.description,
       ownerusername: req.user.username,
+      ownerAvatar: req.user.profImg,
       owner: req.user.id
     }, function(){
       req.flash('success_msg','File uploaded!')
@@ -352,16 +355,15 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
 
 
 //public feed
-app.get('/images', function(req, res) {
+app.get('/images', ensureAuthenticated, function(req, res) {
     Images.getAll(function(data){
-      console.log(data.length);
-      res.render('images', {result: data});
+      console.log(req.user.profImg);
+      res.render('images', {result: data, user: req.user});
     });
 }); // router close
 
 //entry manager
-app.get('/manager', function(req, res) {
-  console.log(req.user.id);
+app.get('/manager', ensureAuthenticated, function(req, res) {
    Images.findById(req.user.id, function(data){
      res.render('manager', {result: data});
    });
@@ -414,25 +416,25 @@ app.get('/manager', function(req, res) {
 //   }); //router close
 
 //delete all
-// app.delete('/delete', function(req, res) {
-//   pool.connect(function(err, client, done) {
-//     client.query('delete from uploads', function(err, result) {
-//       res.sendStatus(200);
-//       done();
-//       });
-//   });
-// }); // router close
+app.delete('/delete', function(req, res) {
+  pool.connect(function(err, client, done) {
+    client.query('delete from uploads', function(err, result) {
+      res.sendStatus(200);
+      done();
+      });
+  });
+}); // router close
 
 
 //delete by message id
-// app.delete('/delete/:id', function(req, res) {
-//   pool.connect(function(err, client, done) {
-//     client.query('delete from uploads where id = $1',[req.params.id], function(err, result) {
-//       res.sendStatus(200);
-//       done();
-//       });
-//   });
-// }); // router close
+app.delete('/delete/:id', function(req, res) {
+  console.log('id of image being deleted '+req.params.id);
+  Images.deleteOne(req.params.id, function(req, res){
+    render('/manager');
+  });
+}); // router close
+
+
 
 
 //No modifications below this line!

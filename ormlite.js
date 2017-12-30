@@ -71,18 +71,21 @@ class User{
   }
 
   uploadProfImg(id, profImgUrl){
-    this.model.findAll({
+    var tableRef = this.model;
+    this.model.findOne({
       where: {
         id: id
       }
-    }).then(function(rows,tableRef) {
-       var data = [];
-       for(var i = 0; i < rows.length; i++) {
-         data.push(rows[i].dataValues);
-       }
+    })
+    .then(function(rows){
+      console.log(tableRef);
+      tableRef.update({
+          profImg: profImgUrl
+        }, {where: {id:id}});
 
-      // return cb(data);
-    });
+    })
+
+
   };
 
 
