@@ -38,7 +38,7 @@
 <form method="POST" action="/profimg" enctype="multipart/form-data">
 	<!-- COMPONENT START -->
 	<div class="form-group">
-<h2>Welcome, <%= user.firstName %>!</h2>
+<h2>Welcome to Pixr, <%= user.firstName %>!</h2>
 <p>Let's get you started by first getting your profile image</p>
     <input type="file" name="image"  placeholder='Choose a file...' /><br>
 	</div>
@@ -49,5 +49,3 @@
 </form>
 </div>
 </div><!-- closig tag for container webdev  -->
-<!-- footer starts here -->
-<% include footer.ejs %>

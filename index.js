@@ -9,6 +9,7 @@ var port = process.env.PORT || 5000;
 var multer = require('multer');
 var user = require('./ormlite');
 var images = require('./images');
+var comments = require('./comments');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
@@ -17,9 +18,16 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/pixr';
 
+//sequelize models
 
 var User = new user(conString,'users');
 var Images = new images(conString,'images');
+var Comments = new comments(conString,'comments');
+
+
+
+
+
 //middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -269,9 +277,8 @@ app.post('/register', function(req, res) {
         lastName: req.body.lname,
         email: req.body.email,
         username:req.body.username,
-        profImg:req.body.profImg,
+        profImg: 'defaultavatar.png',
         password:hash
-
       }, function(){
         console.log('Upload to DB succesful!');;
       });
@@ -279,7 +286,7 @@ app.post('/register', function(req, res) {
     });
 		console.log('everything looks good');
     req.flash('success_msg', 'You are registered and can now login');
-    res.redirect('/images');
+    res.redirect('/');
 	}
 }); // router close
 
@@ -345,9 +352,39 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
       owner: req.user.id
     }, function(){
       req.flash('success_msg','File uploaded!')
-      res.redirect('upload');
+      res.redirect('/images');
       console.log('Upload to DB succesful!');;
     });
+};
+}); //router close
+
+//comments handler
+app.post('/postcomment',function (req, res) {
+  // Validation -
+  // req.checkBody('image', 'Image file is required').notEmpty();
+  req.checkBody('comment', 'Comment cannot be empty').notEmpty();
+
+  var errors = req.validationErrors();
+
+  if(errors){
+    req.flash('error_msg','Comment required')
+    res.redirect('upload');
+  }
+
+
+  else {
+    Comments.insertIntoTable({
+      imageID: req.body.imgid,
+      comment: req.body.comment,
+      ownerusername: req.user.username,
+      ownerAvatar: req.user.profImg
+    }, function(){
+      req.flash('success_msg','File uploaded!')
+      res.redirect('/images/'+req.body.imgid);
+      console.log('handler '+req.body.imgid);
+    });
+
+
 };
 }); //router close
 
@@ -357,9 +394,25 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
 //public feed
 app.get('/images', ensureAuthenticated, function(req, res) {
     Images.getAll(function(data){
-      console.log(req.user.profImg);
       res.render('images', {result: data, user: req.user});
     });
+}); // router close
+
+//solo image
+app.get('/images/:id', ensureAuthenticated, function(req, res, next) {
+    Images.global(req.params.id,function(data){
+        Comments.findById(req.params.id, function(comments){
+
+res.render('soloimage', {result: data, comments:comments, user:req.user, id:req.params.id});
+          })
+     });
+
+
+
+
+
+
+
 }); // router close
 
 //entry manager

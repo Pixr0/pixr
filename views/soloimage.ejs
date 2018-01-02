@@ -1,0 +1,49 @@
+<head>
+  <title>pixr</title>
+<% include usersheader.ejs %>
+</head>
+
+
+<% include nav.ejs %>
+
+
+
+<div class="container">
+    <div class="row">
+      <%# loop through and display all messages in DB%>
+        <% for (var i = 0; i < result.length; i++) { %>
+            <div class="well mainwell">
+             <img class="avatar" src="<%= '../media/uploads/'+result[i].ownerAvatar %>" alt="" /> <b><%= result[i].ownerusername %></b> <br /><br />
+              <a href="/images/<%= result[i].id %>"> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></a><br /><br />
+
+              <div class="imginfo">
+                <b><%= result[i].ownerusername %></b>
+                <%= result[i].description %><br />
+
+<% for (var j = 0; j < comments.length; j++) { %>
+<b>  <%= comments[j].ownerusername%></b> <%= comments[j].comment%><br  />
+<% } %>
+                <form method="POST" action="/postcomment" enctype="application/json">
+                  <!-- COMPONENT START -->
+                  <div class="form-group">
+
+                    <label>Your comment</label>
+                    <textarea class="form-control" name="comment" rows="5" cols="60"></textarea> <br>
+                  </div>
+                  <textarea class="imgid" name="imgid" rows="2" cols="2" value="<%=id%>"><%=id%></textarea>
+
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="reset" class="btn btn-danger">Reset</button>
+                  </div>
+                </form>
+
+
+
+              </div>
+
+
+            </div>
+        <% } %>
+    </div>
+</div>

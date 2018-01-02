@@ -3,12 +3,13 @@
 <% include header.ejs %>
 </head>
 
-<%=console.log(user.profImg);%>
+
+
 <% include nav.ejs %>
-<div class="container manager">
-  <img class="lgavatar" src="<%='../media/uploads/'+user.profImg%>" alt="" /><span class="managerName">Welcome, <%= user.firstName %>!</span>
+<div class="container main">
+  <img class="lgavatar" src="<%='../media/uploads/'+user.profImg%>" alt="User avatar" /><span class="managerName">Welcome, <%= user.firstName %>!</span>
   <p>
-    Manage image posts here. Delete each message individually or edit descriptions below.
+    Manage image posts here. Delete each post individually or edit descriptions below. You can also upload an avatar by clicking [<a href="/profimg">HERE</a>].
   </p>
   <%# loop through and display all messages in DB%>
     <% for (var i = 0; i < result.length; i++) { %>
