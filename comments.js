@@ -1,43 +1,36 @@
 const Sequelize = require('sequelize');
-// const Comments = require('./comments');
 
-class Images{
+class Comments{
   constructor(conString, tableName){
     this.tableName = tableName;
     this.sequelize = this.init(conString),
     this.model = this.createModel(this.tableName);
     this.authenticate = this.authenticate();
-    // this.association = this.association();
   }
 
   init(conString){
     return new Sequelize(conString);
+
   }
 
   authenticate(){
-    this.model.sync();
+      this.model.sync();
       this.sequelize.authenticate()
     .then(() => {
-      console.log('Connection to images table has been established successfully.');
+      console.log('Connection to comments table has been established successfully.');
     })
     .catch(err => {
       console.error('Unable to connect to the database:', err);
     });
   }
-//
-// association(){
-//   this.model.belongsTo(Comments, {foreignKey: 'id', targetKey: 'imageID'});
-// }
-
 
   createModel(tablename){
-    console.log('creating images table with '+ tablename);
+    console.log('creating comments table with '+ tablename);
     return this.sequelize.define(tablename, {
-    imgUrl: Sequelize.STRING,
-    description: Sequelize.STRING,
+    imageID: Sequelize.INTEGER,
+    comment: Sequelize.STRING,
     ownerusername: Sequelize.STRING,
-    ownerAvatar: Sequelize.STRING,
-    owner: Sequelize.INTEGER},
+    ownerAvatar: Sequelize.STRING},
     {freezeTableName: true});
   }
 
@@ -61,37 +54,18 @@ class Images{
   }
 
   findById(id, cb){
-    console.log('passed id ' +id);
     this.model.findAll({
       where: {
-        owner: id
+        imageID: id
       }
     }).then(function(rows) {
-       var data = [];
+       var comments = [];
        for(var i = 0; i < rows.length; i++) {
-         data.push(rows[i].dataValues);
+         comments.push(rows[i].dataValues);
        }
-       console.log(rows.length);
-       return cb(data);
+       return cb(comments);
     });
   }
-
-  global(id, cb){
-    console.log('passed id ' +id);
-    this.model.findAll({
-      where: {
-        id: id
-      }
-    }).then(function(rows) {
-       var data = [];
-       for(var i = 0; i < rows.length; i++) {
-         data.push(rows[i].dataValues);
-       }
-       console.log(rows.length);
-       return cb(data);
-    });
-  }
-
 
   deleteOne(id,cb){
     this.model.destroy({
@@ -126,6 +100,6 @@ class Images{
 
 
 // export Table class
-module.exports = Images;
+module.exports = Comments;
 
 //
