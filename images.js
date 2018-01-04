@@ -92,6 +92,22 @@ class Images{
     });
   }
 
+  editDesc(id, desc, cb){
+    var tableRef = this.model;
+    this.model.findOne({
+      where: {
+        id: id
+      }
+    })
+    .then(function(rows){
+      console.log(tableRef);
+      tableRef.update({
+          description: desc
+        }, {where: {id:id}});
+    })
+    cb();
+  };
+
 
   deleteOne(id,cb){
     this.model.destroy({

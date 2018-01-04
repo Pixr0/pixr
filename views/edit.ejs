@@ -1,0 +1,33 @@
+<head>
+  <title>pixr0</title>
+<% include usersheader.ejs %>
+</head>
+
+
+
+<% include nav.ejs %>
+<div class="container mainContainer">
+  <div class="col-md-8 col-md-offset-2">
+
+  <span class="managerName">Edit an image description</span>
+  <p>
+  </p>
+  <%# loop through and display all messages in DB%>
+    <% for (var i = 0; i < result.length; i++) { %>
+        <div class="well mainwell">
+          <p> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></p><br />
+          <p><b>Date posted:</b>  <%= result[i].createdAt %></p>
+          <form method="POST" action="/editdescription" >
+            <textarea rows="5" cols="55" name="descEdit"><%= result[i].description %></textarea>
+            <div class="form-group">
+           		<button type="submit" class="btn btn-primary">Submit</button>
+           		<button type="reset" class="btn btn-danger">Reset</button>
+       	    </div>
+            <textarea class="imgid" name="imgid" rows="2" cols="2" value="<%=id%>"><%=id%></textarea>
+
+           </form>
+          </div>
+
+    <% } %>
+  </div>
+</div>
