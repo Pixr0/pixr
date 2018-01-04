@@ -22,7 +22,11 @@ html, body {
 }
 
 .fadein {
-    -webkit-animation: fadein .5s ease-out 0s forwards;
+  -webkit-animation: fadein .5s ease-out 0s forwards;
+}
+
+.editImg {
+  width: 400px;
 }
 
 .btn-lg {
@@ -180,6 +184,13 @@ html, body {
   background-color: #fff;
 }
 
+.editWell {
+  max-width: 440px;
+  margin:auto;
+  margin-bottom: 20px !important;*/
+  background-color: #fff;
+}
+
 .mainwell {
   max-width: 500px;
 
@@ -249,9 +260,7 @@ html, body {
   font-family: sans-serif;
 }
 
-.mainContainer {
-  min-height: calc(100vh - 220px);
-}
+
 .wrapper {
     min-height: 100%;
     margin: 0 auto -200px; /* the bottom margin is the negative value of the footer's height */

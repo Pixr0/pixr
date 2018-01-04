@@ -36,6 +36,8 @@ class User{
     {freezeTableName: true});
   }
 
+
+
   getAll(cb){
     this.model.sync();
     this.model.findAll().then(function(rows) {
@@ -83,10 +85,7 @@ class User{
       tableRef.update({
           profImg: profImgUrl
         }, {where: {id:id}});
-
     })
-
-
   };
 
 

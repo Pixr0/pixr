@@ -34,13 +34,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname + '/public'));
 
 //localhost connection string - uncomment line below when testing app locally
-const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
+//const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
 //postgres connection string - uncomment line below when testing app on heroku
 //const configuration = process.env.DATABASE_URL;
 
 
-const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString.parse(configuration) : configuration);
+//const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString.parse(configuration) : configuration);
 
 app.set('view engine', 'ejs');
 
@@ -402,18 +402,26 @@ app.get('/images', ensureAuthenticated, function(req, res) {
 app.get('/images/:id', ensureAuthenticated, function(req, res, next) {
     Images.global(req.params.id,function(data){
         Comments.findById(req.params.id, function(comments){
-
-res.render('soloimage', {result: data, comments:comments, user:req.user, id:req.params.id});
+            res.render('soloimage', {result: data, comments:comments, user:req.user, id:req.params.id});
           })
+            })
      });
 
 
 
-
-
-
-
+//edit description
+app.get('/edit/:id', ensureAuthenticated, function(req, res) {
+    Images.global(req.params.id, function(data){
+      res.render('edit', {result: data, user: req.user, id: req.params.id});
+    });
 }); // router close
+
+//prof img upload handler
+app.post('/editdescription' ,function (req, res, next) {
+    Images.editDesc(req.body.imgid,req.body.descEdit, function(){
+      res.redirect('/manager');
+    });
+}); //router close
 
 //entry manager
 app.get('/manager', ensureAuthenticated, function(req, res) {
