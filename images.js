@@ -37,6 +37,7 @@ class Images{
     description: Sequelize.STRING,
     ownerusername: Sequelize.STRING,
     ownerAvatar: Sequelize.STRING,
+    tags: Sequelize.STRING,
     owner: Sequelize.INTEGER},
     {freezeTableName: true});
   }
@@ -65,6 +66,22 @@ class Images{
     this.model.findAll({
       where: {
         owner: id
+      }
+    }).then(function(rows) {
+       var data = [];
+       for(var i = 0; i < rows.length; i++) {
+         data.push(rows[i].dataValues);
+       }
+       console.log(rows.length);
+       return cb(data);
+    });
+  }
+
+  findByTag(tag, cb){
+    console.log('passed tag ' +tag);
+    this.model.findAll({
+      where: {
+        tags: {ilike: '%'+tag+'%'}
       }
     }).then(function(rows) {
        var data = [];
