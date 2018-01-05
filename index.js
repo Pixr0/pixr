@@ -347,6 +347,7 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
     Images.insertIntoTable({
       imgUrl: req.file.path,
       description: req.body.description,
+      tags: req.body.tags,
       ownerusername: req.user.username,
       ownerAvatar: req.user.profImg,
       owner: req.user.id
@@ -427,6 +428,13 @@ app.post('/editdescription' ,function (req, res, next) {
 app.get('/manager', ensureAuthenticated, function(req, res) {
    Images.findById(req.user.id, function(data){
      res.render('manager', {result: data});
+   });
+}); // router close
+
+//photos by tag
+app.get('/tags/:tag', ensureAuthenticated, function(req, res) {
+   Images.findByTag(req.params.tag, function(data){
+     res.render('tags', {result: data, tag:req.params.tag});
    });
 }); // router close
 

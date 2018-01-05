@@ -1,0 +1,26 @@
+<head>
+  <title>pixr0</title>
+<% include usersheader.ejs %>
+</head>
+
+
+
+<% include nav.ejs %>
+<div class="container mainContainer">
+  <div class="col-md-8 col-md-offset-2">
+  <span class="managerName">Seaching images for tag: <i><%= tag %></i></span>
+
+  <%# loop through and display all messages in DB%>
+    <% for (var i = 0; i < result.length; i++) { %>
+        <div class="well mainwell">
+          <p> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></p><br />
+          <p><b>Date posted:</b>  <%= result[i].createdAt %></p>
+          <p>  <%= result[i].description %> </p>
+        </div>
+    <% } %>
+
+
+
+
+</div>
+</div>
