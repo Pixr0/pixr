@@ -1,6 +1,6 @@
 var fs = require('fs');
 var S3FS = require('s3fs');
-
+var dotenv = require('dotenv').config()
 var multiparty = require('connect-multiparty');
 var multipartyMiddleware = multiparty();
 var express = require('express');
@@ -32,8 +32,8 @@ var Comments = new comments(conString,'comments');
 //amazon s3
 
 var s3 = new S3FS('nycdapixr',{
-  accessKeyId: 'AKIAISGJ3OAYNPY62Q5Q',
-  secretAccessKey: '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'
+  accessKeyId: process.env.AWSAccessKeyId,
+  secretAccessKey: process.env.AWSSecretKey
 });
 
 //middleware
@@ -46,7 +46,8 @@ app.use(express.static(__dirname + '/public'));
 //const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
 //postgres connection string - uncomment line below when testing app on heroku
-//const configuration = process.env.DATABASE_URL;
+// const configuration = process.env.DATABASE_URL;
+// console.log(process.env.DATABASE_URL);
 
 
 //const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString.parse(configuration) : configuration);
