@@ -12,23 +12,17 @@
       <%# loop through and display all messages in DB%>
         <% for (var i = 0; i < result.length; i++) { %>
             <div class="well mainwell fadein">
-             <img class="avatar" src="<%= '../media/uploads/'+result[i].ownerAvatar %>" alt="" /> <b><%= result[i].ownerusername %></b> <br /><br />
-              <a href="/images/<%= result[i].id %>"> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></a><br /><br />
-
+             <img class="avatar" src="<%= 'https://s3.amazonaws.com/nycdapixr/avatars/'+result[i].ownerAvatar %>" alt="" /> <b><%= result[i].ownerusername %></b> <br /><br />
+              <a href="/images/<%= result[i].id %>"> <img class="msgImg" src="<%='https://s3.amazonaws.com/nycdapixr/resized/'+result[i].imgUrl%>" alt=""></a><br /><br />
               <div class="imginfo">
                 <b><%= result[i].ownerusername %></b>
-                <%= result[i].description %><br />
+                <%= result[i].description %>
                 <% var tagArray = result[i].tags.split(','); %>
                 <% console.log(tagArray); %>
                 <% for (var j = 0; j < tagArray.length; j++) { %>
-                 <a href="/tags/<%= tagArray[j].trim() %>"> <%=tagArray[j].trim()%>
+                 <a href="/tags/<%= tagArray[j].trim() %>"> #<%=tagArray[j].trim()%></a>
                 <% } %>
-
-
-
               </div>
-
-
             </div>
         <% } %>
     </div>
