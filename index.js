@@ -8,6 +8,7 @@ var app = express();
 var parser = require('body-parser');
 var path = ('path');
 var pg = require('pg');
+pg.defaults.ssl = true;
 var parseConnectionString = require('pg-connection-string');
 var port = process.env.PORT || 5000;
 var multer = require('multer');
