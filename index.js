@@ -1,4 +1,8 @@
 var fs = require('fs');
+var S3FS = require('s3fs');
+
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 var express = require('express');
 var app = express();
 var parser = require('body-parser');
@@ -9,6 +13,7 @@ var port = process.env.PORT || 5000;
 var multer = require('multer');
 var user = require('./ormlite');
 var images = require('./images');
+var sharp = require('sharp');
 var comments = require('./comments');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
@@ -24,14 +29,18 @@ var User = new user(conString,'users');
 var Images = new images(conString,'images');
 var Comments = new comments(conString,'comments');
 
+//amazon s3
 
-
-
+var s3 = new S3FS('nycdapixr',{
+  accessKeyId: 'AKIAISGJ3OAYNPY62Q5Q',
+  secretAccessKey: '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'
+});
 
 //middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname + '/public'));
+//app.use(multipartyMiddleware);
 
 //localhost connection string - uncomment line below when testing app locally
 //const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
@@ -240,6 +249,8 @@ app.get('/users/:user',ensureAuthenticated, function(req, res) {
 
 
 
+
+
 //registration user auth handler
 app.post('/register', function(req, res) {
     var fname = req.body.fname;
@@ -306,6 +317,13 @@ app.post('/profimg', requestHandler.single("image"),function (req, res, next) {
   }else {
     console.log(req.file.filename);
     User.uploadProfImg(req.user.id,req.file.filename);
+    var avatar = fs.createReadStream(req.file.path);
+
+
+    s3.writeFile('./avatars/'+req.file.filename, avatar, function (err) {
+        if (err) throw err;
+        console.log('Avatar saved!')});
+
 
 
 
@@ -327,25 +345,26 @@ app.get('/upload', ensureAuthenticated, function(req,res){
 
 //upload handler
 app.post('/upload', requestHandler.single("image"),function (req, res, next) {
-
-  // Validation -
-  // req.checkBody('image', 'Image file is required').notEmpty();
   req.checkBody('description', 'Image description is required').notEmpty();
+  req.checkBody('description', 'A description that is not over 150 characters is required').isLength({ max: 150 });
 
   var errors = req.validationErrors();
+  console.log(errors);
 
   if(errors){
-      req.flash('error_msg','Description required')
+    req.flash('error_msg','A description is required, and it must not be over 150 characters')
     res.redirect('upload');
+    return;
   }
 
   if (!req.file) {
     req.flash('error_msg','File required')
     res.redirect('upload');
+    return;
 
-  }else {
+  } else {
     Images.insertIntoTable({
-      imgUrl: req.file.path,
+      imgUrl: req.file.filename,
       description: req.body.description,
       tags: req.body.tags,
       ownerusername: req.user.username,
@@ -355,8 +374,33 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
       req.flash('success_msg','File uploaded!')
       res.redirect('/images');
       console.log('Upload to DB succesful!');;
+      sharp(req.file.path)
+        .resize(460)
+        .toFile('./public/media/uploads/resize/'+req.file.filename, function(err, data) {
+          console.log(err);
+          console.log(data);
+          var resize = fs.createReadStream('./public/media/uploads/resize/'+req.file.filename);
+          s3.writeFile('./resized/'+req.file.filename, resize, function (err) {
+              if (err) throw err;
+              console.log('Resized image saved!')});
+        });
+
+        console.log('PATH '+req.file.path);
+        console.log('FILENAME '+req.file.filename);
+
+        var orig = fs.createReadStream(req.file.path);
+
+
+        s3.writeFile('./original/'+req.file.filename, orig, function (err) {
+            if (err) throw err;
+            console.log('Original saved!')});
+
+
     });
-};
+  };
+
+
+
 }); //router close
 
 //comments handler
@@ -419,7 +463,7 @@ app.get('/edit/:id', ensureAuthenticated, function(req, res) {
 
 //prof img upload handler
 app.post('/editdescription' ,function (req, res, next) {
-    Images.editDesc(req.body.imgid,req.body.descEdit, function(){
+    Images.editDesc(req.body.imgid,req.body.descEdit,req.body.tagEdit, function(){
       res.redirect('/manager');
     });
 }); //router close

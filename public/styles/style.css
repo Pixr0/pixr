@@ -21,6 +21,14 @@ html, body {
   float: right;
 }
 
+.sololarge {
+  max-width: 700px;
+}
+
+textarea {
+  resize: none;
+}
+
 .fadein {
   -webkit-animation: fadein .5s ease-out 0s forwards;
 }

@@ -8,9 +8,9 @@
 <% include nav.ejs %>
 <div class="container mainContainer">
   <div class="col-md-8 col-md-offset-2">
-  <img class="lgavatar" src="<%='../media/uploads/'+user.profImg%>" alt="User avatar" /><span class="managerName">Welcome, <%= user.firstName %>!</span>
+  <img class="lgavatar" src="<%='https://s3.amazonaws.com/nycdapixr/avatars/'+user.profImg%>" alt="User avatar" /><span class="managerName">Welcome, <%= user.firstName %>!</span>
   <p>
-    Manage image posts here. Delete each post individually or edit descriptions below. You can also upload an avatar by clicking [<a href="/profimg">HERE</a>].
+    This page shows all the images that you have uploaded to Pixr. Delete each post individually or edit descriptions below. You can also upload an avatar by clicking [<a href="/profimg">HERE</a>].
   </p>
   <%# loop through and display all messages in DB%>
     <% for (var i = 0; i < result.length; i++) { %>
@@ -18,9 +18,15 @@
           <button type="button" class="close delMsg" aria-label="Close" data-id="<%= result[i].id %>">
           <span aria-hidden="true">&times;</span>
           </button><br  /><br />
-          <p> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></p><br />
-          <p><b>Date posted:</b>  <%= result[i].createdAt %></p>
-          <p>  <%= result[i].description %> [<a href="/edit/<%= result[i].id %>"+ <%= result[i].id %></p>edit comment</a>]</p>
+          <p><a href="/images/<%= result[i].id %>"><img class="msgImg" src="<%='https://s3.amazonaws.com/nycdapixr/resized/'+result[i].imgUrl%>" alt=""></a> </p>
+          <b>Date posted:</b>  <%= result[i].createdAt %>
+          <p>  <%= result[i].description %>
+          <% var tagArray = result[i].tags.split(','); %>
+          <% console.log(tagArray); %>
+          <% for (var j = 0; j < tagArray.length; j++) { %>
+           <a href="/tags/<%= tagArray[j].trim() %>"> #<%=tagArray[j].trim()%></a>
+            <% } %><br />
+          [<a href="/edit/<%= result[i].id %>"+ <%= result[i].id %></p>edit description</a>]
         </div>
     <% } %>
 

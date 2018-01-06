@@ -15,10 +15,18 @@
   <%# loop through and display all messages in DB%>
     <% for (var i = 0; i < result.length; i++) { %>
         <div class="well mainwell">
-          <p> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></p><br />
+          <p> <img class="msgImg" src="<%='https://s3.amazonaws.com/nycdapixr/resized/'+result[i].imgUrl%>" alt=""></p><br />
           <p><b>Date posted:</b>  <%= result[i].createdAt %></p>
           <form method="POST" action="/editdescription" >
-            <textarea rows="5" cols="55" name="descEdit"><%= result[i].description %></textarea>
+          <p><label>New description</label>
+          <textarea class="form-control" rows="5" cols="55" name="descEdit"><%= result[i].description %></textarea><br />
+          </p>
+          <p><label>New tags</label>
+          <textarea class="form-control" rows="1" cols="55" name="tagEdit"><%= result[i].tags %></textarea>
+
+          </p>
+
+
             <div class="form-group">
            		<button type="submit" class="btn btn-primary">Submit</button>
            		<button type="reset" class="btn btn-danger">Reset</button>

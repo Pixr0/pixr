@@ -24,10 +24,6 @@ class Images{
       console.error('Unable to connect to the database:', err);
     });
   }
-//
-// association(){
-//   this.model.belongsTo(Comments, {foreignKey: 'id', targetKey: 'imageID'});
-// }
 
 
   createModel(tablename){
@@ -109,7 +105,7 @@ class Images{
     });
   }
 
-  editDesc(id, desc, cb){
+  editDesc(id, desc,tag, cb){
     var tableRef = this.model;
     this.model.findOne({
       where: {
@@ -119,7 +115,9 @@ class Images{
     .then(function(rows){
       console.log(tableRef);
       tableRef.update({
-          description: desc
+          description: desc,
+          tags:tag
+
         }, {where: {id:id}});
     })
     cb();

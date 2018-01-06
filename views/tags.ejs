@@ -8,14 +8,20 @@
 <% include nav.ejs %>
 <div class="container mainContainer">
   <div class="col-md-8 col-md-offset-2">
-  <span class="managerName">Seaching images for tag: <i><%= tag %></i></span>
+  <p class="managerName">Images with #<%= tag %></p>
 
   <%# loop through and display all messages in DB%>
     <% for (var i = 0; i < result.length; i++) { %>
         <div class="well mainwell">
-          <p> <img class="msgImg" src="<%= '../'+result[i].imgUrl.split('/')[1]+'/'+result[i].imgUrl.split('/')[2]+'/'+result[i].imgUrl.split('/')[3] %>" alt=""></p><br />
-          <p><b>Date posted:</b>  <%= result[i].createdAt %></p>
-          <p>  <%= result[i].description %> </p>
+        <img class="avatar" src="<%= 'https://s3.amazonaws.com/nycdapixr/avatars/'+result[i].ownerAvatar %>" alt="" /> <b><%= result[i].ownerusername %></b> <br /><br />
+
+          <p> <img class="msgImg" src="<%='https://s3.amazonaws.com/nycdapixr/resized/'+result[i].imgUrl%>" alt=""></p>
+          <p>  <%= result[i].description %>
+          <% var tagArray = result[i].tags.split(','); %>
+          <% console.log(tagArray); %>
+          <% for (var k = 0; k < tagArray.length; k++) { %>
+           <a href="/tags/<%= tagArray[k].trim() %>"> #<%=tagArray[k].trim()%></a>
+             <% } %></p>
         </div>
     <% } %>
 

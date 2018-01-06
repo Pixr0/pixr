@@ -13,6 +13,7 @@
     "bcryptjs": "*",
     "body-parser": "^1.18.2",
     "connect-flash": "*",
+    "connect-multiparty": "^2.1.0",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "express-messages": "*",
@@ -25,6 +26,7 @@
     "path": "^0.12.7",
     "pg": "^7.4.0",
     "pg-connection-string": "^2.0.0",
+    "s3fs": "git+https://github.com/RiptideElements/s3fs.git",
     "sequelize": "^4.28.1",
     "sharp": "^0.18.4"
   }
