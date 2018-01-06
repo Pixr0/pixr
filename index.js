@@ -21,13 +21,16 @@ var flash = require('connect-flash');
 var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/pixr';
+
+//var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/pixr';
+
+// var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/pixr';
 
 //sequelize models
 
-var User = new user(conString,'users');
-var Images = new images(conString,'images');
-var Comments = new comments(conString,'comments');
+var User = new user(process.env.DATABASE_URL,'users');
+var Images = new images(process.env.DATABASE_URL,'images');
+var Comments = new comments(process.env.DATABASE_URL,'comments');
 
 //amazon s3
 
