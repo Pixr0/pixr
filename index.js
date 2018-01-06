@@ -376,8 +376,7 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
       ownerAvatar: req.user.profImg,
       owner: req.user.id
     }, function(){
-      req.flash('success_msg','File uploaded!')
-      res.redirect('/images');
+
       console.log('Upload to DB succesful!');;
       sharp(req.file.path)
         .resize(460)
@@ -387,6 +386,7 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
           var resize = fs.createReadStream('./public/media/uploads/resize/'+req.file.filename);
           s3.writeFile('./resized/'+req.file.filename, resize, function (err) {
               if (err) throw err;
+              res.redirect('/images');
               console.log('Resized image saved!')});
         });
 
