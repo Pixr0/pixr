@@ -18,7 +18,7 @@
           <button type="button" class="close delMsg" aria-label="Close" data-id="<%= result[i].id %>">
           <span aria-hidden="true">&times;</span>
           </button><br  /><br />
-          <p><a href="/images/<%= result[i].id %>"><img class="msgImg" src="<%='https://s3.amazonaws.com/nycdapixr/resized/'+result[i].imgUrl%>" alt=""></a> </p>
+          <p><a href="/images/<%= result[i].id %>"><img class="msgImg" src="<%='https://s3.amazonaws.com/nycdapixr/original/'+result[i].imgUrl%>" alt=""></a> </p>
           <b>Date posted:</b>  <%= result[i].createdAt %>
           <p>  <%= result[i].description %>
           <% var tagArray = result[i].tags.split(','); %>
