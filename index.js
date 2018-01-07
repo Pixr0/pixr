@@ -1,13 +1,16 @@
 var fs = require('fs');
 var S3FS = require('s3fs');
-
+var dotenv = require('dotenv').config()
 var multiparty = require('connect-multiparty');
 var multipartyMiddleware = multiparty();
 var express = require('express');
 var app = express();
+var aws = require('aws-sdk')
+var multerS3 = require('multer-s3')
 var parser = require('body-parser');
 var path = ('path');
 var pg = require('pg');
+pg.defaults.ssl = true;
 var parseConnectionString = require('pg-connection-string');
 var port = process.env.PORT || 5000;
 var multer = require('multer');
@@ -21,20 +24,24 @@ var flash = require('connect-flash');
 var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/pixr';
+var s3 = require( 'multer-storage-s3' );
+
+//var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/pixr';
+
+// var conString = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/pixr';
 
 //sequelize models
 
-var User = new user(conString,'users');
-var Images = new images(conString,'images');
-var Comments = new comments(conString,'comments');
+var User = new user(process.env.DATABASE_URL,'users');
+var Images = new images(process.env.DATABASE_URL,'images');
+var Comments = new comments(process.env.DATABASE_URL,'comments');
 
 //amazon s3
 
-var s3 = new S3FS('nycdapixr',{
-  accessKeyId: 'AKIAISGJ3OAYNPY62Q5Q',
-  secretAccessKey: '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'
-});
+// var s3 = new S3FS('nycdapixr',{
+//   accessKeyId: process.env.AWSAccessKeyId,
+//   secretAccessKey: process.env.AWSSecretKey
+// });
 
 //middleware
 app.use(bodyParser.json());
@@ -46,39 +53,41 @@ app.use(express.static(__dirname + '/public'));
 //const configuration = 'postgres://' + process.env.POSTGRES_USER + ':' + process.env.POSTGRES_PASSWORD + '@localhost/uploads';
 
 //postgres connection string - uncomment line below when testing app on heroku
-//const configuration = process.env.DATABASE_URL;
+// const configuration = process.env.DATABASE_URL;
+// console.log(process.env.DATABASE_URL);
 
 
-//const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString.parse(configuration) : configuration);
 
 app.set('view engine', 'ejs');
 
 
-//multer begin
+//routes for multer-s3
 
-// diskStorage specifies we're saving the files to disk
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // the directory of where to save the files
-    cb(null, 'public/media/uploads')
-  },
-  filename: function (req, file, cb) {
-    // For each request what do we call the file.
-    // file.mimetype.split('/')[1] captures the extension (eg png or jpg).
-    cb(null, file.originalname.split('.')[0] + '-' + Date.now() + '.' + file.mimetype.split('/')[1])
-} });
+var avatar = s3({
+    destination : function( req, file, cb ) {
+        cb( null, 'avatars' );
+    },
+    filename    : function( req, file, cb ) {
+        cb( null, file.fieldname + '-' + Date.now() + '.' + file.mimetype.split('/')[1] );
+    },
+    bucket      : 'nycdapixr',
+    region      : 'us-east-1'
+});
 
-//upload engine
+var image = s3({
+    destination : function( req, file, cb ) {
+        cb( null, 'original' );
+    },
+    filename    : function( req, file, cb ) {
+        cb( null, file.fieldname + '-' + Date.now() + '.' + file.mimetype.split('/')[1] );
+    },
+    bucket      : 'nycdapixr',
+    region      : 'us-east-1'
+});
 
-//name of field comes from the name attr in the html form
-const upload = multer({
-  storage: storage
-}).single("image");
-//end of multer
 
-
-
-var requestHandler = multer({ storage: storage })
+var avatar = multer({ storage: avatar })
+var image = multer({ storage: image })
 
 //bcrypt
 var bcrypt = require('bcrypt');
@@ -308,7 +317,7 @@ app.get('/profimg', function(req,res){
   }); //router close
 
 //prof img upload handler
-app.post('/profimg', requestHandler.single("image"),function (req, res, next) {
+app.post('/profimg', avatar.single("image"),function (req, res, next) {
 //console.log(req.file.path);
   if (!req.file) {
     req.flash('error_msg','File required')
@@ -317,19 +326,7 @@ app.post('/profimg', requestHandler.single("image"),function (req, res, next) {
   }else {
     console.log(req.file.filename);
     User.uploadProfImg(req.user.id,req.file.filename);
-    var avatar = fs.createReadStream(req.file.path);
-
-
-    s3.writeFile('./avatars/'+req.file.filename, avatar, function (err) {
-        if (err) throw err;
-        console.log('Avatar saved!')});
-
-
-
-
-      // req.flash('success_msg','File uploaded!')
-      // res.redirect('profimg');
-      // console.log('Upload to DB succesful!');;
+    res.redirect('manager');
     };
 
 
@@ -344,7 +341,7 @@ app.get('/upload', ensureAuthenticated, function(req,res){
   }); //router close
 
 //upload handler
-app.post('/upload', requestHandler.single("image"),function (req, res, next) {
+app.post('/upload', image.single("image"),function (req, res, next) {
   req.checkBody('description', 'Image description is required').notEmpty();
   req.checkBody('description', 'A description that is not over 150 characters is required').isLength({ max: 150 });
 
@@ -371,31 +368,7 @@ app.post('/upload', requestHandler.single("image"),function (req, res, next) {
       ownerAvatar: req.user.profImg,
       owner: req.user.id
     }, function(){
-      req.flash('success_msg','File uploaded!')
-      res.redirect('/images');
-      console.log('Upload to DB succesful!');;
-      sharp(req.file.path)
-        .resize(460)
-        .toFile('./public/media/uploads/resize/'+req.file.filename, function(err, data) {
-          console.log(err);
-          console.log(data);
-          var resize = fs.createReadStream('./public/media/uploads/resize/'+req.file.filename);
-          s3.writeFile('./resized/'+req.file.filename, resize, function (err) {
-              if (err) throw err;
-              console.log('Resized image saved!')});
-        });
-
-        console.log('PATH '+req.file.path);
-        console.log('FILENAME '+req.file.filename);
-
-        var orig = fs.createReadStream(req.file.path);
-
-
-        s3.writeFile('./original/'+req.file.filename, orig, function (err) {
-            if (err) throw err;
-            console.log('Original saved!')});
-
-
+    res.redirect('/images');
     });
   };
 
