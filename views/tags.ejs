@@ -19,9 +19,11 @@
           <p>  <%= result[i].description %>
           <% var tagArray = result[i].tags.split(','); %>
           <% console.log(tagArray); %>
+          <% if (tagArray.length >= 1) {   %>
           <% for (var k = 0; k < tagArray.length; k++) { %>
            <a href="/tags/<%= tagArray[k].trim() %>"> #<%=tagArray[k].trim()%></a>
              <% } %></p>
+            <%}%>
         </div>
     <% } %>
 

@@ -57,12 +57,11 @@ app.use(express.static(__dirname + '/public'));
 // console.log(process.env.DATABASE_URL);
 
 
-//const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString.parse(configuration) : configuration);
 
 app.set('view engine', 'ejs');
 
 
-//multer begin
+//routes for multer-s3
 
 var avatar = s3({
     destination : function( req, file, cb ) {
