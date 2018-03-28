@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <img src="https://s3.amazonaws.com/nycdapixr/assets/ui/pixr_transparent.png" alt="Pixr" />
+  <img src="https://s3.amazonaws.com/nycdapixr/assets/ui/pixr_transparent.png" alt="Pixr" width="200" />
 
 </h1>
 
@@ -20,17 +20,15 @@
 * Built initial framework from which all future development will be based off from.
 * Deployed provisional app on Heroku. (https://pixr0.herokuapp.com/)
 
-##### Main items left to be done:
-* Resize uploaded images with Sharp.
-* Add the ability to edit image description.
-* Add image tagging functionality.
-
 
 # Features
+* User authentication using Passport.js
+* Full CRUD functionality where users can post, edit, and delete their posts
+* Commenting and tagging functionality for photo posts.
 
 # Instructions
+* To run this app locally in your own computer, run `npm install` then `npm start`. You will need to supply your own PostgreSQL and Amazon S3 credentials 
 
-# Project Resources
 
 ### NPM Install List
 #### index.js
