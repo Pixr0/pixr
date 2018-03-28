@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://pixr0.herokuapp.com/"><img src="https://i.pinimg.com/originals/37/a9/70/37a9707cf8811fb40de24815eb14397c.jpg" alt="Pixr" width="200"></a>
+  <a href="https://pixr0.herokuapp.com/"><img src="https://s3.amazonaws.com/nycdapixr/assets/ui/newlogo.png" alt="Pixr" width="200"></a>
   <br>
   Pixr
   <br>
