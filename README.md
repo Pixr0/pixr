@@ -1,10 +1,8 @@
 
 <h1 align="center">
   <br>
-  <a href="https://pixr0.herokuapp.com/"><img src="https://s3.amazonaws.com/nycdapixr/assets/ui/newlogo.png" alt="Pixr" width="200"></a>
-  <br>
-  Pixr
-  <br>
+  <a href="https://s3.amazonaws.com/nycdapixr/assets/ui/pixr_transparent.png" alt="Pixr" width="200"></a>
+
 </h1>
 
 <h4 align="center">A Simple Image Uploading App Based on Node.js :fire:.  </h4>
