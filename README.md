@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://s3.amazonaws.com/nycdapixr/assets/ui/pixr_transparent.png" alt="Pixr" width="200"></a>
+  <img src="https://s3.amazonaws.com/nycdapixr/assets/ui/pixr_transparent.png" alt="Pixr" />
 
 </h1>
 
